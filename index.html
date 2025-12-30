@@ -140,14 +140,29 @@
       playerVars: { enablejsapi: 1, autoplay: 1, rel: 0, playsinline: 1 },
       events: {
         onReady: function(e) {
-          // Try to unmute & play (may be blocked by browser)
-          try { e.target.unMute && e.target.unMute(); e.target.playVideo && e.target.playVideo(); } catch (err) {}
+          // Attempt unmuted playback: unmute, set full volume, then play
+          try {
+            e.target.unMute && e.target.unMute();
+            e.target.setVolume && e.target.setVolume(100);
+            e.target.playVideo && e.target.playVideo();
+          } catch (err) {}
 
-          // If not playing within 1s, show overlay so user can enable audio
+          // After a short delay, check whether playback started and audio is audible; show overlay if not
           setTimeout(function() {
             var playing = player.getPlayerState && player.getPlayerState() === 1;
-            if (!playing) document.getElementById('audio-overlay').style.display = 'flex';
-          }, 1000);
+            var muted = player.isMuted ? player.isMuted() : false;
+            var volume = player.getVolume ? player.getVolume() : 100;
+            if (!playing || muted || volume === 0) {
+              document.getElementById('audio-overlay').style.display = 'flex';
+            }
+          }, 800);
+
+          // Also attempt to unmute on first user click anywhere (user gesture)
+          function onFirstUserGesture() {
+            try { player.unMute && player.unMute(); player.setVolume && player.setVolume(100); } catch (e) {}
+            document.removeEventListener('click', onFirstUserGesture);
+          }
+          document.addEventListener('click', onFirstUserGesture);
         }
       }
     });
@@ -155,7 +170,7 @@
 
   document.getElementById('enable-audio').addEventListener('click', function() {
     document.getElementById('audio-overlay').style.display = 'none';
-    try { player.unMute && player.unMute(); player.playVideo && player.playVideo(); } catch (e) {}
+    try { player.unMute && player.unMute(); player.setVolume && player.setVolume(100); player.playVideo && player.playVideo(); } catch (e) {}
   });
 </script>
 

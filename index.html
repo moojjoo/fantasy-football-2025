@@ -59,6 +59,22 @@
       background: #020317;
       color: #888;
     }
+    .audio-controls {
+      margin-top: 12px;
+    }
+    .audio-controls button {
+      background: #00d18a;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      font-size: 1rem;
+      margin: 0 5px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .audio-controls button:hover {
+      background: #00b572;
+    }
   </style>
 </head>
 <body>
@@ -69,7 +85,11 @@
   </div>
 
   <div class="team">Dirty Mo Panthers 🏆</div>
-
+  <div style="text-align:center; margin: 40px 0;">
+  <img src="dirty_mo_panthers_2025.png" 
+       alt="Dirty Mo Panthers - 2025 Champions"
+       style="max-width: 80%; height: auto; border-radius: 12px;" />
+</div>
   <div class="video-container">
     <iframe 
       src="https://www.youtube.com/embed/04854XqcfCY?autoplay=0&rel=0"
@@ -78,6 +98,42 @@
       allowfullscreen>
     </iframe>
   </div>
+
+  <!-- AUDIO-ONLY: hidden player + controls -->
+<div class="video-container audio-only">
+  <div id="yt-player" aria-hidden="true"></div>
+
+  <div class="audio-controls" style="margin-top:12px;">
+    <button id="play-music">▶️ Play Music</button>
+    <button id="pause-music">⏸️ Pause</button>
+  </div>
+</div>
+
+<!-- YouTube IFrame API (creates tiny hidden player) -->
+<script>
+  // load API
+  const tag = document.createElement('script');
+  tag.src = "https://www.youtube.com/iframe_api";
+  document.head.appendChild(tag);
+
+  let player;
+  function onYouTubeIframeAPIReady() {
+    player = new YT.Player('yt-player', {
+      height: '1',
+      width: '1',
+      videoId: '04854XqcfCY', // your video ID
+      playerVars: { controls: 0, rel: 0, modestbranding: 1, playsinline: 1 },
+      events: { onReady: () => {} }
+    });
+  }
+
+  document.getElementById('play-music').addEventListener('click', () => {
+    if (player && player.playVideo) player.playVideo();
+  });
+  document.getElementById('pause-music').addEventListener('click', () => {
+    if (player && player.pauseVideo) player.pauseVideo();
+  });
+</script>
 
   <div class="footer"><div class="header">
   <h1 class="mega-title">2025 IFL CHAMPIONS</h1>
